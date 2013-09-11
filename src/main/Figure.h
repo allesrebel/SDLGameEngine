@@ -10,6 +10,7 @@
 
 #include "SDLAbstractionLayer.h"
 #include "Exception.h"
+#include <typeinfo>
 #include <iostream>
 #include <cmath>
 
@@ -58,14 +59,6 @@ public:
       XHAT, YHAT
    };
 
-   /*
-    * Description: Enum table for types of collision resolution. Note that BOUNDARY
-    * includes walls, floors, and other hard objects considered rigid
-    */
-   enum Resolves {
-      BOUNDARY, PLAYER, POINT
-   };
-
 private:
 
    /*
@@ -76,12 +69,15 @@ private:
 protected:
 
    /*
+<<<<<<< HEAD
     * Description: contains the type of collision resolution property this
     * Figure has
     */
    Resolves resolution;
 
    /*
+=======
+>>>>>>> 91ae34208de03c46554e1ba6bad2d8e87c33675d
     * Description: contains dimensions of the image
     */
    SDL_Rect dim;
@@ -287,7 +283,7 @@ protected:
    void initialize(int x, int y, double gravity, double speed,
          double jumpStrength, SDL_Surface* screen, Gravity gravityEnabled,
          bool leader, int numClips, int levelWidth, int levelHeight,
-         Surface* p1, Surface* p2, Surface* p3, Surface* p4, Resolves resolve);
+         Surface* p1, Surface* p2, Surface* p3, Surface* p4);
 
    /*
     * Description: sets the clips to enable animation
@@ -389,9 +385,8 @@ public:
    Figure(int x, int y, Surface& image, SDL_Surface* screen,
          Gravity gravityEnabled, bool leader = false, double speed = 5,
          double gravity = 1, double jumpStrength = 1, int numClips = 1,
-         int levelWidth = -1, int levelHeight = -1, Resolves resolve = BOUNDARY,
-         Surface * p1 = NULL, Surface* p2 = NULL, Surface* p3 = NULL,
-         Surface* p4 = NULL);
+         int levelWidth = -1, int levelHeight = -1, Surface * p1 = NULL,
+         Surface* p2 = NULL, Surface* p3 = NULL, Surface* p4 = NULL);
 
    /*
     * Description: sets Figure
@@ -436,9 +431,8 @@ public:
    virtual void setFigure(int x, int y, Surface& image, SDL_Surface* screen,
          Gravity gravityEnabled, int levelWidth = -1, int levelHeight = -1,
          bool leader = false, double speed = 5, double gravity = 1,
-         double jumpStrength = 1, int numClips = 1, Resolves resolve = BOUNDARY,
-         Surface* p1 = NULL, Surface* p2 = NULL, Surface* p3 = NULL,
-         Surface* p4 = NULL);
+         double jumpStrength = 1, int numClips = 1, Surface* p1 = NULL,
+         Surface* p2 = NULL, Surface* p3 = NULL, Surface* p4 = NULL);
 
    /*
     * Description: obtains the width of the Figure
@@ -459,11 +453,6 @@ public:
     * Description: obtains the y position of the Figure
     */
    virtual int getY();
-
-   /*
-    * Description: obtains the Resolves resolution of the Figure
-    */
-   virtual Resolves getResolution();
 
    /*
     * Description: parses through the subclasses to see what kind of Figure the this instance is colliding with, then calls
@@ -571,7 +560,11 @@ public:
    virtual SDL_Rect* getCameraClip();
 
    /*
-    * Description: obtains the class name of the subclass instance
+    * Description: performs instanceof check to see if subclass is an instance of
+    * RectFigure or CircFigure. Can be overrided, but user must Figure::checkCollision() must
+    * be edited, else a FigureException will be thrown. It is advised not to override this
+    * if it can be avoided
+    *
     * Return: the class name of the subclass instantiated
     */
    virtual string getClassName();
@@ -648,8 +641,8 @@ public:
    RectFigure(int x, int y, Surface& image, SDL_Surface* screen,
          Gravity gravityEnabled, int levelWidth = -1, int levelHeight = -1,
          bool leader = false, double speed = 5, double gravity = 1,
-         double jumpStrength = 1, int numClips = 1, Resolves resolve = BOUNDARY,
-         Surface* p1 = NULL, Surface* p2 = NULL, Surface* p3 =
+         double jumpStrength = 1, int numClips = 1, Surface* p1 = NULL,
+         Surface* p2 = NULL, Surface* p3 =
          NULL, Surface* p4 = NULL);
 
    /*
@@ -763,9 +756,8 @@ public:
    CircFigure(int x, int y, Surface& image, SDL_Surface* screen,
          Gravity gravityEnabled, int levelWidth = -1, int levelHeight = -1,
          bool leader = false, double speed = 5, double gravity = 1,
-         double jumpStrength = 1, int numClips = 1, Resolves resolve = BOUNDARY,
-         Surface* p1 = NULL, Surface* p2 = NULL, Surface* p3 = NULL,
-         Surface* p4 = NULL);
+         double jumpStrength = 1, int numClips = 1, Surface* p1 = NULL,
+         Surface* p2 = NULL, Surface* p3 = NULL, Surface* p4 = NULL);
 
    /*
     * Description: Overloading parameterized constructor
@@ -810,9 +802,8 @@ public:
    virtual void setFigure(int x, int y, Surface& image, SDL_Surface* screen,
          Gravity gravityEnabled, int levelWidth = -1, int levelHeight = -1,
          bool leader = false, double speed = 5, double gravity = 1,
-         double jumpStrength = 1, int numClips = 1, Resolves resolve = BOUNDARY,
-         Surface* p1 = NULL, Surface* p2 = NULL, Surface* p3 = NULL,
-         Surface* p4 = NULL);
+         double jumpStrength = 1, int numClips = 1, Surface* p1 = NULL,
+         Surface* p2 = NULL, Surface* p3 = NULL, Surface* p4 = NULL);
 
    /*
     * Description: obtains the radius of the circle
