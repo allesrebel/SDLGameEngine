@@ -10,19 +10,19 @@
 #include "Exception.h"
 #include "Figure.h"
 #include "TempFigure.h"
+#include "Editor/Editor.h"
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 
 using namespace std;
-
-const int SCREEN_WIDTH = 900;
-const int SCREEN_HEIGHT = 550;
 
 const int FRAMERATE = 30;
 
 const int DOT_WIDTH = 20;
 const int DOT_HEIGHT = 20;
 
+const int SCREEN_WIDTH = 900;
+const int SCREEN_HEIGHT = 550;
 const int LEVEL_WIDTH = 1191;
 const int LEVEL_HEIGHT = 670;
 
@@ -74,180 +74,168 @@ const bool TEST_STRING_INPUT = false;
  *Figure::Gravity gravEnDis for Enabling and Disabling gravity
  */
 int main(int argc, char* argv[]) {
-   if (TEST_GRAPHICS) {
-      SDL_Surface* screen = init(SCREEN_WIDTH, SCREEN_HEIGHT, "SDL Scrolling");
-      vector<Figure*> collisions;
+	if (TEST_GRAPHICS) {
 
-      Surface bgnd("images/bgnd.jpg");
-      Surface dot("images/dot.png", Surface::CYAN);
-      Surface foo("images/Cyan_Final.png", Surface::BLACK);
-      Surface rect("images/rectangle.png");
-      Surface coin("images/coin.png", Surface::CYAN);
+		//collision map container (objects in scene)
+		//vector<Figure*>* collisions = NULL;
 
-      Surface red("images/red.bmp", Surface::CYAN);
-      Surface blue("images/blue.bmp", Surface::CYAN);
-      Surface green("images/green.bmp", Surface::CYAN);
-      Surface shimmer("images/shimmer.bmp", Surface::CYAN);
+		SDL_Surface* screen = init(SCREEN_WIDTH, SCREEN_HEIGHT, "SDL Scrolling");
 
-      RectFigure rf1(300, 525, rect, screen, Figure::GRAVITY_DISABLED,
-            LEVEL_WIDTH, LEVEL_HEIGHT, OTHER_LEADER, OTHER_SPEED, OTHER_GRAVITY,
-            OTHER_JUMPSTRENGTH, OTHER_NUMCLIPS, Figure::BOUNDARY, &red,
-            &shimmer);
-      RectFigure rf2(500, 125, rect, screen, Figure::GRAVITY_DISABLED,
-            LEVEL_WIDTH, LEVEL_HEIGHT, OTHER_LEADER, OTHER_SPEED, OTHER_GRAVITY,
-            OTHER_JUMPSTRENGTH, OTHER_NUMCLIPS);
-      CircFigure cf1(700, 525, dot, screen, Figure::GRAVITY_DISABLED,
-            LEVEL_WIDTH, LEVEL_HEIGHT, OTHER_LEADER, OTHER_SPEED, OTHER_GRAVITY,
-            OTHER_JUMPSTRENGTH, OTHER_NUMCLIPS);
-      CircFigure cf2(900, 350, dot, screen, Figure::GRAVITY_DISABLED,
-            LEVEL_WIDTH, LEVEL_HEIGHT, OTHER_LEADER, OTHER_SPEED, OTHER_GRAVITY,
-            OTHER_JUMPSTRENGTH, OTHER_NUMCLIPS, Figure::BOUNDARY, &red,
-            &shimmer);
-      TempFigure coin1(600, 325, coin, screen, LEVEL_WIDTH, LEVEL_HEIGHT);
+		vector<Figure*>* collisions = NULL;
 
-      RectFigure rf;
-      CircFigure cf;
+		printf("Creating editor...");
+		//start up editor
+		Editor myLevelMap;
+		printf("Done!\n");
 
-      if (FOO) {
-         rf.setFigure(100, 300, foo, screen, gravEnDis, LEVEL_WIDTH,
-               LEVEL_HEIGHT, true, FS, G, FJS, FNC, Figure::PLAYER, &red,
-               &green, &blue, &shimmer);
+		printf("Attempting to read file...");
+		myLevelMap.setFile("resources/level.txt", Editor::read);
+		collisions = myLevelMap.decode();
+		printf("Size: %d\n",collisions->size());
 
-         collisions.push_back(&rf);
-      }
-      else {
-         cf.setFigure(100, 300, dot, screen, gravEnDis, LEVEL_WIDTH,
-               LEVEL_HEIGHT, true, CS, G, CJS, CNC);
+		Surface bgnd("images/bgnd.jpg");
+		Surface dot("images/dot.png", Surface::CYAN);
+		Surface foo("images/Cyan_Final.png", Surface::BLACK);
+		Surface rect("images/rectangle.png");
+		Surface coin("images/coin.png", Surface::CYAN);
 
-         collisions.push_back(&cf);
-      }
+		Surface red("images/red.bmp", Surface::CYAN);
+		Surface blue("images/blue.bmp", Surface::CYAN);
+		Surface green("images/green.bmp", Surface::CYAN);
+		Surface shimmer("images/shimmer.bmp", Surface::CYAN);
 
-      //Test constructors
-      /*
-       RectFigure rf(100, 300, foo, screen, gravEnDis, true, FS, G, FJS, FNC,
-       LEVEL_WIDTH, LEVEL_HEIGHT, &red, &green, &blue, &shimmer);
-       CircFigure cf(100, 300, dot, screen, gravEnDis, true, CS, G, CJS, CNC,
-       LEVEL_WIDTH, LEVEL_HEIGHT, &red, &green, &blue, &shimmer);
-       */
+		RectFigure rf1(300, 525, rect, screen, Figure::GRAVITY_DISABLED, LEVEL_WIDTH, LEVEL_HEIGHT, OTHER_LEADER,
+				OTHER_SPEED, OTHER_GRAVITY, OTHER_JUMPSTRENGTH, OTHER_NUMCLIPS, Figure::BOUNDARY, &red, &shimmer);
+		RectFigure rf2(500, 125, rect, screen, Figure::GRAVITY_DISABLED, LEVEL_WIDTH, LEVEL_HEIGHT, OTHER_LEADER,
+				OTHER_SPEED, OTHER_GRAVITY, OTHER_JUMPSTRENGTH, OTHER_NUMCLIPS);
+		CircFigure cf1(700, 525, dot, screen, Figure::GRAVITY_DISABLED, LEVEL_WIDTH, LEVEL_HEIGHT, OTHER_LEADER,
+				OTHER_SPEED, OTHER_GRAVITY, OTHER_JUMPSTRENGTH, OTHER_NUMCLIPS);
+		CircFigure cf2(900, 350, dot, screen, Figure::GRAVITY_DISABLED, LEVEL_WIDTH, LEVEL_HEIGHT, OTHER_LEADER,
+				OTHER_SPEED, OTHER_GRAVITY, OTHER_JUMPSTRENGTH, OTHER_NUMCLIPS, Figure::BOUNDARY, &red, &shimmer);
+		TempFigure coin1(600, 325, coin, screen, LEVEL_WIDTH, LEVEL_HEIGHT);
 
-      bool quit = false;
-      SDL_Event event;
-      Timer timer;
+		RectFigure rf;
+		CircFigure cf;
 
-      collisions.push_back(&rf1);
-      collisions.push_back(&rf2);
-      collisions.push_back(&cf1);
-      collisions.push_back(&cf2);
-      collisions.push_back(&coin1);
+		if (FOO) {
+			rf.setFigure(100, 300, foo, screen, gravEnDis, LEVEL_WIDTH, LEVEL_HEIGHT, true, FS, G, FJS, FNC,
+					Figure::PLAYER, &red, &green, &blue, &shimmer);
 
-      Music m("resources/tristam.mp3");
+			(*collisions).push_back(&rf);
+		}
+		else {
+			cf.setFigure(100, 300, dot, screen, gravEnDis, LEVEL_WIDTH, LEVEL_HEIGHT, true, CS, G, CJS, CNC);
 
-      timer.start();
+			(*collisions).push_back(&cf);
+		}
 
-      if (Mix_PlayingMusic() == 0)
-         if (Mix_PlayMusic(m.getMix_Music(), -1) < 0)
-            throw SoundException();
+		//Test constructors
+		/*
+		 RectFigure rf(100, 300, foo, screen, gravEnDis, true, FS, G, FJS, FNC,
+		 LEVEL_WIDTH, LEVEL_HEIGHT, &red, &green, &blue, &shimmer);
+		 CircFigure cf(100, 300, dot, screen, gravEnDis, true, CS, G, CJS, CNC,
+		 LEVEL_WIDTH, LEVEL_HEIGHT, &red, &green, &blue, &shimmer);
+		 */
 
-      Mix_VolumeMusic(32); //0 to 128
+		bool quit = false;
+		SDL_Event event;
+		Timer timer;
 
-      while (!quit) {
-         if (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT)
-               quit = true;
+		/*
+		(*collisions).push_back(&rf1);
+		(*collisions).push_back(&rf2);
+		(*collisions).push_back(&cf1);
+		(*collisions).push_back(&cf2);
+		(*collisions).push_back(&coin1);
+		*/
 
-            if (FOO)
-               rf.handleInput(event);
-            else
-               cf.handleInput(event);
-         }
+		Music m("resources/tristam.mp3");
 
-         if (FOO) {
-            rf.move(collisions, timer.getTicks());
-            timer.start();
+		timer.start();
 
-            applySurface(0, 0, bgnd, screen, rf.getCameraClip());
-            rf.show(rf.getCameraClip());
+		if (Mix_PlayingMusic() == 0) if (Mix_PlayMusic(m.getMix_Music(), -1) < 0) throw SoundException();
 
-            //TODO Kevin - commented this for now
-            /*for (int i = 0; i < (int) collisions.size(); i++) {
-             int marker = collisions[i]->show(rf.getCameraClip());
-             if (marker == 2)
-             removeIndex(collisions, i);
-             }*/
+		Mix_VolumeMusic(32); //0 to 128
 
-            rf1.show(rf.getCameraClip());
-            rf2.show(rf.getCameraClip());
-            cf1.show(rf.getCameraClip());
-            cf2.show(rf.getCameraClip());
+		while (!quit) {
+			if (SDL_PollEvent(&event)) {
+				if (event.type == SDL_QUIT) quit = true;
 
-            coin1.move(collisions, 0);
-            coin1.show(rf.getCameraClip());
-         }
-         else {
-            cf.move(collisions, timer.getTicks());
-            timer.start();
+				if (FOO) rf.handleInput(event);
+				else cf.handleInput(event);
+			}
 
-            applySurface(0, 0, bgnd, screen, cf.getCameraClip());
-            cf.show();
+			if (FOO) {
+				rf.move((*collisions), timer.getTicks());
+				timer.start();
 
-            rf1.show(cf.getCameraClip());
-            rf2.show(cf.getCameraClip());
-            cf1.show(cf.getCameraClip());
-            cf2.show(cf.getCameraClip());
-         }
+				applySurface(0, 0, bgnd, screen, rf.getCameraClip());
+				rf.show(rf.getCameraClip());
 
-         flip(screen);
-      }
+				//TODO Kevin - commented this for now
+				for (int i = 0; i < (int) (*collisions).size(); i++) {
+					(*collisions)[i]->show(rf.getCameraClip());
+				}
+			}
+			else {
+				cf.move(*collisions, timer.getTicks());
+				timer.start();
 
-      Mix_HaltMusic();
+				applySurface(0, 0, bgnd, screen, cf.getCameraClip());
+				cf.show();
 
-      if (TEST_STRING_INPUT) {
-         quit = false;
-         bool nameEntered = false;
+				rf1.show(cf.getCameraClip());
+				rf2.show(cf.getCameraClip());
+				cf1.show(cf.getCameraClip());
+				cf2.show(cf.getCameraClip());
+			}
 
-         StringInput name(TTF_PATH, FONT_SIZE, FONT_COLOR, screen);
-         Surface msg(TTF_PATH, FONT_SIZE, FONT_COLOR,
-               "New High Score! Enter Name: ");
+			flip(screen);
+		}
 
-         fillScreen(screen, Surface::WHITE);
-         applySurface(getHorizontalMiddlePosition(msg, screen), 100, msg,
-               screen);
-         flip(screen);
+		Mix_HaltMusic();
 
-         while (!quit) {
-            if (SDL_PollEvent(&event)) {
-               if (event.type == SDL_QUIT) {
-                  quit = true;
-                  break;
-               }
+		if (TEST_STRING_INPUT) {
+			quit = false;
+			bool nameEntered = false;
 
-               if (!nameEntered) {
-                  name.handleInput(event);
+			StringInput name(TTF_PATH, FONT_SIZE, FONT_COLOR, screen);
+			Surface msg(TTF_PATH, FONT_SIZE, FONT_COLOR, "New High Score! Enter Name: ");
 
-                  if (event.type == SDL_KEYDOWN
-                        && event.key.keysym.sym == SDLK_RETURN) {
-                     nameEntered = true;
-                     msg.setSDL_Surface(TTF_PATH, FONT_SIZE, FONT_COLOR,
-                           "Rank 1st: ");
-                     quit = true;
-                  }
-               }
+			fillScreen(screen, Surface::WHITE);
+			applySurface(getHorizontalMiddlePosition(msg, screen), 100, msg, screen);
+			flip(screen);
 
-               fillScreen(screen, Surface::WHITE);
-               applySurface(getHorizontalMiddlePosition(msg, screen), 100, msg,
-                     screen);
-               name.showCentered();
+			while (!quit) {
+				if (SDL_PollEvent(&event)) {
+					if (event.type == SDL_QUIT) {
+						quit = true;
+						break;
+					}
 
-               flip(screen);
+					if (!nameEntered) {
+						name.handleInput(event);
 
-               if (nameEntered)
-                  SDL_Delay(500);
-            }
-         }
-      }
-   }
+						if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN) {
+							nameEntered = true;
+							msg.setSDL_Surface(TTF_PATH, FONT_SIZE, FONT_COLOR, "Rank 1st: ");
+							quit = true;
+						}
+					}
 
-   cleanUp();
+					fillScreen(screen, Surface::WHITE);
+					applySurface(getHorizontalMiddlePosition(msg, screen), 100, msg, screen);
+					name.showCentered();
 
-   return 0;
+					flip(screen);
+
+					if (nameEntered) SDL_Delay(500);
+				}
+			}
+		}
+	}
+
+	cleanUp();
+
+	return 0;
 }

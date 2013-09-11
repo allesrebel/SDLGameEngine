@@ -7,6 +7,14 @@
 
 #include "Figure.h"
 
+int Figure::getColorKey(){
+	image->getColorKey();
+}
+
+string Figure::getFilePath(){
+	image->getFilePath();
+}
+
 int Figure::determineGravity() {
    if (gravityEnabled && !u) {
       if (p.y < lh - dim.h)
@@ -480,13 +488,6 @@ void Figure::showParticles(SDL_Rect* camera) {
 
 SDL_Rect* Figure::getCameraClip() {
    return camera;
-}
-
-/*
- * TODO Rebel: Attempting to fix ledge problem
- */
-void Figure::addHitBoxes(vector<AABB*> allocator) {
-
 }
 
 /*
