@@ -7,14 +7,6 @@
 
 #include "Figure.h"
 
-int Figure::getColorKey(){
-	image->getColorKey();
-}
-
-string Figure::getFilePath(){
-	image->getFilePath();
-}
-
 int Figure::determineGravity() {
    if (gravityEnabled && !u) {
       if (p.y < lh - dim.h)

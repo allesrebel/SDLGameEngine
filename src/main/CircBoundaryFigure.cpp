@@ -12,12 +12,12 @@ CircBoundaryFigure::CircBoundaryFigure() {
 
 CircBoundaryFigure::CircBoundaryFigure(int x, int y, Surface& image,
       SDL_Surface* screen, int levelWidth, int levelHeight, int numClips) :
-      CircFigure(x, y, image, screen, GRAVITY_ENABLED, levelWidth, levelHeight,
+      CircFigure(x, y, image, screen, Figure::GRAVITY_ENABLED, levelWidth, levelHeight,
             false, 5, 1, 1, numClips) {
 }
 
 void CircBoundaryFigure::setFigure(int x, int y, Surface& image,
       SDL_Surface* screen, int levelWidth, int levelHeight, int numClips) {
-   CircFigure::setFigure(x, y, image, screen, GRAVITY_ENABLED, levelWidth,
+   CircFigure::setFigure(x, y, image, screen, Figure::GRAVITY_ENABLED, levelWidth,
          levelHeight, false, 5, 1, 1, numClips);
 }
