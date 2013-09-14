@@ -305,8 +305,16 @@ int Figure::getHeight() {
    return dim.h;
 }
 
+void Figure::setX(int x) {
+   p.x = x;
+}
+
 int Figure::getX() {
    return p.x;
+}
+
+void Figure::setY(int y) {
+   p.y = y;
 }
 
 int Figure::getY() {
@@ -358,9 +366,6 @@ void Figure::handleInput(SDL_Event& event) {
             v.y -= dim.h * speed / 100 * jumpStrength;
 
          u = true;
-         if (inAir)
-            u = false;
-
          break;
       case SDLK_DOWN:
          if (!gravityEnabled)
@@ -387,7 +392,7 @@ void Figure::handleInput(SDL_Event& event) {
          if (!gravityEnabled)
             v.y += dim.h * speed / 100 * jumpStrength;
 
-         u = false;
+         u = true;
          break;
       case SDLK_DOWN:
          if (!gravityEnabled)
@@ -436,10 +441,7 @@ void Figure::show(SDL_Rect* otherCamera) {
          status = RIGHT;
          animationFrame += AFVALUE;
       }
-      else
-         animationFrame = 0;
-
-      if (animationFrame >= numClips)
+      if (v.x == 0 || animationFrame >= numClips)
          animationFrame = 0;
 
       if (leader) {
@@ -482,21 +484,6 @@ SDL_Rect* Figure::getCameraClip() {
    return camera;
 }
 
-/*
- * Collision resolver -
- * Uses a int given in the figure, and int given in other
- * object that is involved with the collision
- * eg. player has resolve 1, and goal has resolve 2
- * so when the objects collide, collision 1,2 occurs
- * (and any special properties of that collision happen)
- * @param int  resolve constant of other involed figure
- * @param float time step given in mili seconds
- *
- * TODO: There has to be a better way to do this
- * Kevin - precondition here: Figure* other is valid and not NULL. Will keep thinking of a
- * better way to do the above. We'll see a pattern when this becomes bigger. Right now I'm
- * thinking of a multi-dimensional list-like data structure (vector, array) perhaps?
- */
 void Figure::resolveCollision(Figure* other, double timeStep, Component dir) {
    if (dir == XHAT)
       p.x -= v.x * timeStep / 1000.0;
@@ -527,6 +514,9 @@ Figure::~Figure() {
       if (particles[i] != NULL)
          delete particles[i];
    }
+
+   delete[] cl;
+   delete[] cr;
 }
 
 RectFigure::RectFigure() {

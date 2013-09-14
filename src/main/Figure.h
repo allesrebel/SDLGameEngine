@@ -421,9 +421,19 @@ public:
    virtual int getHeight();
 
    /*
+    * Description: sets the x position of the Figure
+    */
+   virtual void setX(int x);
+
+   /*
     * Description: obtains the x position of the Figure
     */
    virtual int getX();
+
+   /*
+    * Description: sets the y position of the Figure
+    */
+   virtual void setY(int y);
 
    /*
     * Description: obtains the y position of the Figure
@@ -469,6 +479,8 @@ public:
     * Parameter: int& count is the reference to the counter describing which index of the vector
     * the collision occurred on. After the method has been executed, if count results as -1,
     * then no collision occurred
+    *
+    * Precondition: count must be passed in with the value of 0
     *
     * Return: true if collision occurred, false otherwise
     */
@@ -645,7 +657,7 @@ public:
  * of collision with other Figures
  */
 class CircFigure: public Figure {
-private:
+protected:
 
    /*
     * Description: int r is the radius of the CircFigure
