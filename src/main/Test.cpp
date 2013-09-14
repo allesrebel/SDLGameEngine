@@ -1,3 +1,4 @@
+
 //============================================================================
 // Name        : SDLScrolling.cpp
 // Author      : Kevin Navero
@@ -13,7 +14,6 @@
 #include "CircBoundaryFigure.h"
 #include "TempFigure.h"
 #include "PlayerFigure.h"
-
 #include "GrabbableFigure.h"
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
@@ -36,7 +36,7 @@ const int LEVEL_HEIGHT = 670;
 const double FS = 200;
 const double CS = 1200;
 const double CJS = 11;
-const double FJS = 3;
+const double FJS = 6;
 const double G = 4;
 const int CNC = 1;
 const int FNC = 4;
@@ -84,10 +84,10 @@ int main(int argc, char* argv[]) {
          OTHER_NUMCLIPS);
    CircBoundaryFigure cf2(900, 350, dot, screen, LEVEL_WIDTH, LEVEL_HEIGHT,
          OTHER_NUMCLIPS);
+   TempFigure coin1(600, 325, coin, screen, LEVEL_WIDTH, LEVEL_HEIGHT);
+
    GrabbableFigure g(350, 100, cloud, screen, LEVEL_WIDTH, LEVEL_HEIGHT,
          OTHER_NUMCLIPS);
-
-   TempFigure coin1(600, 325, coin, screen, LEVEL_WIDTH, LEVEL_HEIGHT);
 
    PlayerFigure rf(100, LEVEL_HEIGHT - foo.getSDL_Surface()->h / 2, foo, screen,
          FS, G, FJS, FNC, LEVEL_WIDTH, LEVEL_HEIGHT, &red, &green, &blue,
@@ -100,12 +100,12 @@ int main(int argc, char* argv[]) {
    //must be taken into account in regards to collision detection
    vector<Figure*> collisions;
 
-   collisions.push_back((Figure*)&rf);
-   collisions.push_back((Figure*)&rf1);
-   collisions.push_back((Figure*)&rf2);
-   collisions.push_back((Figure*)&cf1);
-   collisions.push_back((Figure*)&cf2);
+   collisions.push_back(&rf1);
+   collisions.push_back(&rf2);
+   collisions.push_back(&cf1);
+   collisions.push_back(&cf2);
    collisions.push_back(&coin1);
+   collisions.push_back(&rf);
    collisions.push_back(&g);
 
    //Prepare bool quit variable, SDL_Event event, and Timer timer. All of these
