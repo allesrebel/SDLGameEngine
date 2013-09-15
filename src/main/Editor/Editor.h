@@ -57,6 +57,7 @@ class Editor {
 	~Editor();
 
 	void setFile(string, state);
+	void closeFile();
 
 	void writeHeader(Header);
 	Header* readHeader();

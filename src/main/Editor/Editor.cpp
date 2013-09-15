@@ -66,8 +66,12 @@ Header* Editor::readHeader() {
 
 	char buffer[100];
 
-	fscanf(file, "%d %d %d %d", &headerInfo->bg_w, &headerInfo->bg_h,
-			&headerInfo->screen_w, &headerInfo->screen_h);
+	int check = fscanf(file, "%d %d %d %d", &headerInfo->bg_w,
+			&headerInfo->bg_h, &headerInfo->screen_w, &headerInfo->screen_h);
+	if (check != 4) {
+		printf("Error: No level.txt found!\n");
+		return NULL;
+	}
 	fscanf(file, "%s", buffer);
 
 	stringstream ss;
@@ -126,6 +130,10 @@ vector<Figure*>* Editor::decode() {
 		Figure* decodedFig = decodeFigure();
 		//if we read a figure from the file then store it in to the result
 		if (decodedFig != NULL) result->push_back(decodedFig);
+		else if (!feof(file)){
+			printf("Invalid figure - header skipped?\n");
+			exit(1);
+		}
 	}
 
 	return result;
@@ -168,7 +176,7 @@ Figure* Editor::decodeFigure() {
 			&lvlHeight, &gravEnable, &colorkey, &classType, &numClips);
 
 	if (check != 8) {
-		printf("Reached end of file!\n");
+		//Invalid figure - or end of file
 		return NULL;
 	}
 
@@ -204,12 +212,12 @@ Figure* Editor::decodeFigure() {
 		}
 		case cursorFigure: {
 			newFig = new CursorFigure(x, y, *mysurf, SDL_GetVideoSurface(),
-					NULL);
+			NULL);
 			break;
 		}
 	}
 
-	newFig->setGravEnable((Figure::Gravity)gravEnable);
+	newFig->setGravEnable((Figure::Gravity) gravEnable);
 
 	return newFig;
 }
@@ -230,7 +238,7 @@ Editor::types Editor::translateTypeID(Figure* obj) {
 	else if (typeid(*obj) == typeid(CursorFigure)) {
 		return cursorFigure;
 	}
-	else if (typeid(*obj) == typeid(PlayerFigure)){
+	else if (typeid(*obj) == typeid(PlayerFigure)) {
 		printf("Found a player object, please don't send them in!\n");
 		exit(1);
 	}
@@ -238,4 +246,8 @@ Editor::types Editor::translateTypeID(Figure* obj) {
 		printf("Error translating typeid- unknown class?\n");
 		exit(1);
 	}
+}
+
+void Editor::closeFile() {
+	fclose(file);
 }
