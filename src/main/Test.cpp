@@ -63,16 +63,14 @@ int main(int argc, char* argv[]) {
 
 	//editor test
 	Editor editor;
-	editor.setFile("resources/level.txt", Editor::write);
-	Header newFileHeader = { SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_WIDTH,
-			LEVEL_HEIGHT, "images/bgnd.jpg", "resources/tristam.mp3" };
-	editor.writeHeader(newFileHeader);
+	editor.setFile("resources/level.txt", Editor::read);
+	Header* info = editor.readHeader();
 
 	//initialize screen, video mode, SDL, ttf, audio, etc.
-	SDL_Surface* screen = init(SCREEN_WIDTH, SCREEN_HEIGHT, "SDL Scrolling");
+	SDL_Surface* screen = init(info->screen_w, info->screen_h, "SDL Scrolling");
 
 	//initialize all images
-	Surface bgnd("images/bgnd.jpg");
+	Surface bgnd(info->bg_path.c_str());
 	Surface dot("images/dot.png", Surface::CYAN);
 	Surface foo("images/Cyan_Final.png", Surface::BLACK);
 	Surface rect("images/rectangle.png");
@@ -84,20 +82,6 @@ int main(int argc, char* argv[]) {
 	Surface green("images/green.bmp", Surface::CYAN);
 	Surface shimmer("images/shimmer.bmp", Surface::CYAN);
 
-	//convert images to Figures
-	RectBoundaryFigure rf1(300, 525, rect, screen, LEVEL_WIDTH, LEVEL_HEIGHT,
-			OTHER_NUMCLIPS);
-	RectBoundaryFigure rf2(500, 125, rect, screen, LEVEL_WIDTH, LEVEL_HEIGHT,
-			OTHER_NUMCLIPS);
-	CircBoundaryFigure cf1(700, 525, dot, screen, LEVEL_WIDTH, LEVEL_HEIGHT,
-			OTHER_NUMCLIPS);
-	CircBoundaryFigure cf2(900, 350, dot, screen, LEVEL_WIDTH, LEVEL_HEIGHT,
-			OTHER_NUMCLIPS);
-	TempFigure coin1(600, 325, coin, screen, LEVEL_WIDTH, LEVEL_HEIGHT);
-
-	GrabbableFigure g(350, 100, cloud, screen, LEVEL_WIDTH, LEVEL_HEIGHT,
-			OTHER_NUMCLIPS);
-
 	PlayerFigure rf(100, LEVEL_HEIGHT - foo.getSDL_Surface()->h / 2, foo,
 			screen, FS, G, FJS, FNC, LEVEL_WIDTH, LEVEL_HEIGHT, &red, &green,
 			&blue, &shimmer);
@@ -107,21 +91,12 @@ int main(int argc, char* argv[]) {
 
 	//collision vector - contains all the Figures (pointers to Figures) that
 	//must be taken into account in regards to collision detection
-	vector<Figure*> collisions;
+	vector<Figure*>* collisions;
 
-	collisions.push_back(&rf1);
-	collisions.push_back(&rf2);
-	collisions.push_back(&cf1);
-	collisions.push_back(&cf2);
-	collisions.push_back(&coin1);
-	collisions.push_back(&g);
-
-	//send into editor
-	editor.encode(&collisions,newFileHeader);
+	collisions = editor.decode();
 
 	// add player object in after editor decoding
-	collisions.push_back(&rf);
-
+	collisions->push_back(&rf);
 
 	//Prepare bool quit variable, SDL_Event event, and Timer timer. All of these
 	//variables will be used in the event loop
@@ -144,16 +119,32 @@ int main(int argc, char* argv[]) {
 			rf.handleInput(event);
 		}
 
-		//Objects that need to have physics applied go here
-		for (unsigned int i = 0; i < collisions.size(); i++) {
-			break;
+		// Move player to new position
+		rf.move(*collisions, timer.getTicks());
+
+		//filter out temp Figs
+		vector<Figure*> filtered;	//everyone else
+		vector<Figure*> tempFigs;	//tempFigs
+
+		for (unsigned int i = 0; i < collisions->size(); i++) {
+			if (typeid(*(collisions->at(i))) == typeid(TempFigure)) {
+				tempFigs.push_back(collisions->at(i));
+			}
+			else if (typeid(*(collisions->at(i))) == typeid(PlayerFigure)) {
+				//ignore the player Fig!
+				continue;
+			}
+			else {
+				filtered.push_back(collisions->at(i));
+			}
 		}
 
-		//move Player Figure to new position based on input given
-		rf.move(collisions, timer.getTicks());
-
-		//move rf2 Figure just for fun as an example to show dynamic properties
-		rf2.move(collisions, timer.getTicks());
+		//Gravity processing here
+		for(unsigned int i = 0; i < filtered.size(); i++){
+			if(filtered[i]->getGravEnable() == Figure::GRAVITY_ENABLED){
+				filtered[i]->move(*collisions,timer.getTicks());
+			}
+		}
 
 		//restart timer since movement is time-based and independent of framerate
 		timer.start();
@@ -161,35 +152,28 @@ int main(int argc, char* argv[]) {
 		//blit background image to screen with respect to the camera following Player Figure
 		applySurface(0, 0, bgnd, screen, rf.getCameraClip());
 
-		//show all other Figures with respect to the relative camera i.e. the Player
-		//Figure's camera
-		rf1.show(rf.getCameraClip());
-		rf2.show(rf.getCameraClip());
-		cf1.show(rf.getCameraClip());
-		cf2.show(rf.getCameraClip());
-		g.show(rf.getCameraClip());
+		//draw all figures but temp Figs and player
+		for (unsigned int i = 0; i < filtered.size(); i++) {
+			filtered[i]->show(rf.getCameraClip());
+		}
 
-		//we need to move coin1 so that collision detection is not
-		//ignored (although actual movement of coin1 doesn't happen because no input
-		//is received). First argument is the collision vector. Second argument is the
-		//delta ticks from the timer which is irrelevant since coin1 does not actually
-		//move. It just disappears when collided with the Player Figure
-		coin1.move(collisions, 0);
+		//apply temp Figure processing here
+		for(unsigned int i = 0; i < tempFigs.size();i++){
+			tempFigs[i]->move(*collisions,0); //move em
+			tempFigs[i]->show(rf.getCameraClip()); //draw em
+		}
 
-		//show coin1 based on the update caused by move()
-		coin1.show(rf.getCameraClip());
-
-		//show the Player Figure
+		//draw player at end
 		rf.show();
 
 		//update the screen by swapping video buffers
 		flip(screen);
 	}
 
-	//stop music
+//stop music
 	Mix_HaltMusic();
 
-	//quit out of SDL, close audio, ttf, etc.
+//quit out of SDL, close audio, ttf, etc.
 	cleanUp();
 
 	return 0;

@@ -807,3 +807,7 @@ int Figure::getColorKey(){
 int Figure::getNumClips() {
 	return numClips;
 }
+
+void Figure::setGravEnable(Figure::Gravity grav) {
+	gravityEnabled = grav;
+}

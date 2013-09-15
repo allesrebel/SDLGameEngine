@@ -167,7 +167,7 @@ Figure* Editor::decodeFigure() {
 	int check = fscanf(file, "%d %d %d %d %d %d %d %d", &x, &y, &lvlWidth,
 			&lvlHeight, &gravEnable, &colorkey, &classType, &numClips);
 
-	if (check != 6) {
+	if (check != 8) {
 		printf("Reached end of file!\n");
 		return NULL;
 	}
@@ -208,6 +208,8 @@ Figure* Editor::decodeFigure() {
 			break;
 		}
 	}
+
+	newFig->setGravEnable((Figure::Gravity)gravEnable);
 
 	return newFig;
 }

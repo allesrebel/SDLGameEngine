@@ -322,6 +322,7 @@ class Figure {
 	int getColorKey();
 	int getGravEnable();
 	int getNumClips();
+	void setGravEnable(Figure::Gravity);
 
 	/*
 	 * Description: Default constructor
