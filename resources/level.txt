@@ -1,62 +1,15 @@
-300 525 1191 670 0 0
+1191 670 900 550
+images/bgnd.jpg
+resources/tristam.mp3
+300 525 1191 670 0 0 0 1
 images/rectangle.png
-500 125 1191 670 0 0
+500 125 1191 670 0 0 0 1
 images/rectangle.png
-700 525 1191 670 0 4
+700 525 1191 670 1 4 4 1
 images/dot.png
-900 350 1191 670 0 4
+900 350 1191 670 1 4 4 1
 images/dot.png
-600 325 1191 670 2 4
+600 325 1191 670 0 4 1 1
 images/coin.png
-632 325 1191 670 2 4
-images/coin.png
-664 325 1191 670 2 4
-images/coin.png
-408 121 1191 670 0 0
-images/rectangle.png
-342 127 1191 670 0 0
-images/rectangle.png
-265 125 1191 670 0 0
-images/rectangle.png
-193 125 1191 670 0 0
-images/rectangle.png
-129 125 1191 670 0 0
-images/rectangle.png
-48 125 1191 670 0 0
-images/rectangle.png
-570 111 1191 670 0 0
-images/rectangle.png
-650 107 1191 670 0 0
-images/rectangle.png
-752 143 1191 670 0 0
-images/rectangle.png
-837 139 1191 670 0 0
-images/rectangle.png
-936 133 1191 670 0 0
-images/rectangle.png
-1002 335 1191 670 0 0
-images/rectangle.png
-932 515 1191 670 0 0
-images/rectangle.png
-824 528 1191 670 0 0
-images/rectangle.png
-758 561 1191 670 0 0
-images/rectangle.png
-684 587 1191 670 0 0
-images/rectangle.png
-616 583 1191 670 0 0
-images/rectangle.png
-532 583 1191 670 0 0
-images/rectangle.png
-454 583 1191 670 0 0
-images/rectangle.png
-394 559 1191 670 0 0
-images/rectangle.png
-229 565 1191 670 0 0
-images/rectangle.png
-165 573 1191 670 0 0
-images/rectangle.png
-93 593 1191 670 0 0
-images/rectangle.png
-50 579 1191 670 0 0
-images/rectangle.png
+350 100 1191 670 0 4 3 1
+images/grab.png
