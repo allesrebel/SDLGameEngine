@@ -7,14 +7,20 @@
 
 #include "PlayerFigure.h"
 
-const double MULTIPLIER = 200;
+const double MULTIPLIER = 300;
 const double MAX = 7;
 const double MIN = 0.2;
+
+SDL_mutex* lock;
+SDL_cond* canTest;
 
 void PlayerFigure::determineGrabX(int deltaTicks) {
    if (grabstate) {
       double unitDir = (B.x - A.x) / abs(B.x - A.x);
       double dir = unitDir * deltaTicks / 1000.0;
+
+      if (isnan(dir))
+         dir = 0;
 
       if (abs(slope(A, B)) <= MIN)
          multiplier /= MIN;
@@ -33,6 +39,9 @@ void PlayerFigure::determineGrabY(int deltaTicks) {
       double unitDir = (B.y - A.y) / abs(B.y - A.y);
       double dir = unitDir * deltaTicks / 1000.0;
 
+      if (isnan(dir))
+         dir = 0;
+
       if (abs(slope(A, B)) >= MAX)
          multiplier *= MAX;
       else if (abs(slope(A, B)) >= 1.0)
@@ -45,11 +54,10 @@ void PlayerFigure::determineGrabY(int deltaTicks) {
 
 void PlayerFigure::checkIfInAir(vector<Figure*>& other) {
    int count = 0;
-
    inAir = true;
-   p.y += 3;
 
    //standing on ground or other Figure
+   p.y += 3;
    if ((v.y == 0 && p.y >= lh - dim.h)
          || (v.y <= gravity && isCollided(other, count)))
       inAir = false;
@@ -59,10 +67,11 @@ void PlayerFigure::checkIfInAir(vector<Figure*>& other) {
    if (p.y < lh - dim.h && v.y <= 0.5 && v.y >= -0.5)
       inAir = true;
 
-   //collided with TempFigure or GrabbableFigure
+   //collision with TempFigure when in midair
    if (count != -1
-         && (typeid(*other[count]) == typeid(TempFigure)
-               || typeid(*other[count]) == typeid(GrabbableFigure)))
+         && ((typeid(*other[count]) == typeid(TempFigure) && p.y < lh - dim.h)
+               || (typeid(*other[count]) == typeid(GrabbableFigure)
+                     && p.y < lh - dim.h)))
       inAir = true;
 }
 
@@ -106,7 +115,10 @@ void PlayerFigure::yMovement(vector<Figure*>& other, int deltaTicks) {
       p.y = lh - dim.h;
 }
 
-PlayerFigure::PlayerFigure() {
+PlayerFigure::PlayerFigure() :
+      RectFigure(), thread(NULL) {
+   lock = NULL;
+   canTest = NULL;
 }
 
 PlayerFigure::PlayerFigure(int x, int y, Surface& image, SDL_Surface* screen,
@@ -117,10 +129,15 @@ PlayerFigure::PlayerFigure(int x, int y, Surface& image, SDL_Surface* screen,
       RectFigure(x, y, image, screen, GRAVITY_ENABLED, levelWidth, levelHeight,
             true, speed, gravity, jumpStrength, numClips, p1, p2, p3, p4), target(
             "images/target2.png", Surface::CYAN), cursor(x, y, target, screen,
-            camera), grabstate(false), multiplier(MULTIPLIER), resetVelY(true) {
+            camera), grabstate(false), multiplier(MULTIPLIER), resetVelY(true), thread(
+            SDL_CreateThread(testThread, NULL)) {
+
    A.x = A.y = 0;
    B.x = B.y = 0;
    grabVel.x = grabVel.y = 0;
+
+   lock = SDL_CreateMutex();
+   canTest = SDL_CreateCond();
 }
 
 void PlayerFigure::setFigure(int x, int y, Surface& image, SDL_Surface* screen,
@@ -140,6 +157,10 @@ void PlayerFigure::setFigure(int x, int y, Surface& image, SDL_Surface* screen,
    A.x = A.y = 0;
    B.x = B.y = 0;
    grabVel.x = grabVel.y = 0;
+
+   thread = SDL_CreateThread(testThread, NULL);
+   lock = SDL_CreateMutex();
+   canTest = SDL_CreateCond();
 }
 
 void PlayerFigure::handleInput(SDL_Event& event) {
@@ -202,7 +223,9 @@ void PlayerFigure::handleInput(SDL_Event& event) {
 }
 
 void PlayerFigure::move(vector<Figure*>& other, int deltaTicks) {
+   cursor.move(other, deltaTicks);
    grabstate = cursor.getGrabState();
+
    if (grabstate) {
       A.x = p.x + dim.w / 2;
       A.y = p.y + dim.h / 2;
@@ -219,17 +242,12 @@ void PlayerFigure::move(vector<Figure*>& other, int deltaTicks) {
 
    xMovement(other, deltaTicks);
    yMovement(other, deltaTicks);
-
-   cursor.move(other, deltaTicks);
-
    setCamera();
 }
 
 void PlayerFigure::resolveCollision(Figure* other, double timeStep,
       Component dir) {
-   if (typeid(*other) == typeid(TempFigure))
-      inAir = true;
-   else if (typeid(*other) == typeid(RectBoundaryFigure)
+   if (typeid(*other) == typeid(RectBoundaryFigure)
          || typeid(*other) == typeid(CircBoundaryFigure)) {
       if (dir == XHAT)
          p.x -= (v.x * timeStep / 1000.0) + grabVel.x;
@@ -275,4 +293,20 @@ void PlayerFigure::show(SDL_Rect* otherCamera) {
 
       cursor.show();
    }
+
+   if (grabstate) {
+      //TODO signal thread to perform A* algorithm
+      SDL_CondSignal(canTest);
+   }
+}
+
+int testThread(void* data) {
+   while (true) {
+      SDL_mutexP(lock);
+      SDL_CondWait(canTest, lock);
+
+      cout << "inside testThread()" << endl;
+   }
+
+   return 0;
 }

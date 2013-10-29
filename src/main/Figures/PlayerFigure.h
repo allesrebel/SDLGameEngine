@@ -8,12 +8,15 @@
 #ifndef PLAYERFIGURE_H_
 #define PLAYERFIGURE_H_
 
-#include "SDLAbstractionLayer.h"
 #include "Figure.h"
 #include "RectBoundaryFigure.h"
 #include "CircBoundaryFigure.h"
 #include "CursorFigure.h"
 #include "TempFigure.h"
+#include "SDL/SDL_thread.h"
+
+//TODO arm animation is needed between the PlayerFigure sprite and the GrabbableFigure sprite
+//when grabstate is active
 
 /*
  * Description: PlayerFigure represents the Figure that the player controls
@@ -27,6 +30,8 @@ private:
    Point A, B;
    double multiplier;
    Velocity grabVel;
+
+   SDL_Thread* thread;
 
 protected:
    virtual void determineGrabX(int deltaTicks);
@@ -102,7 +107,12 @@ public:
    virtual void handleInput(SDL_Event& event);
 
    /*
-    * TODO doc
+    * Description: move handles the movement of the PlayerFigure based on the given
+    * input, grabstate conditions, and grabstate conditions
+    *
+    * Parameter: vector<Figure*>& other is the collisions vector
+    * Parameter: int deltaTicks is the timestep to induce time-based
+    * frame-independent movement
     */
    virtual void move(vector<Figure*>& other, int deltaTicks);
 
@@ -117,9 +127,14 @@ public:
    virtual void resolveCollision(Figure* other, double timeStep, Component dir);
 
    /*
-    * TODO description
+    * Description: renders the PlayerFigure to screen
+    * Parameter: SDL_Rect* otherCamera is the relative camera. Not
+    * really needed in this case. Better off keeping this NULL
     */
    virtual void show(SDL_Rect* otherCamera = NULL);
 };
+
+//TODO description
+int testThread(void* data);
 
 #endif /* PLAYERFIGURE_H_ */

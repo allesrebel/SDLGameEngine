@@ -7,7 +7,9 @@
 
 #include "RectBoundaryFigure.h"
 
-RectBoundaryFigure::RectBoundaryFigure() {
+//TODO document this for other developers
+
+RectBoundaryFigure::RectBoundaryFigure() : RectFigure() {
 }
 
 RectBoundaryFigure::RectBoundaryFigure(int x, int y, Surface& image,

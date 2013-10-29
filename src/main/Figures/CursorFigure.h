@@ -9,7 +9,6 @@
 #define CURSORFIGURE_H_
 
 #include "Figure.h"
-#include "SDLAbstractionLayer.h"
 #include "GrabbableFigure.h"
 
 class CursorFigure: public CircFigure {
@@ -23,6 +22,7 @@ class CursorFigure: public CircFigure {
 
    bool grabbable;
    bool grabstate;
+   bool leftClick;
 
 public:
    CursorFigure();
