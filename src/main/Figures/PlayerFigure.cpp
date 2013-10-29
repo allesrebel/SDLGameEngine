@@ -125,7 +125,6 @@ PlayerFigure::PlayerFigure(int x, int y, Surface& image, SDL_Surface* screen,
       double speed, double gravity, double jumpStrength, int numClips,
       int levelWidth, int levelHeight, Surface* p1, Surface* p2, Surface* p3,
       Surface* p4) :
-
       RectFigure(x, y, image, screen, GRAVITY_ENABLED, levelWidth, levelHeight,
             true, speed, gravity, jumpStrength, numClips, p1, p2, p3, p4), target(
             "images/target2.png", Surface::CYAN), cursor(x, y, target, screen,
@@ -144,7 +143,7 @@ void PlayerFigure::setFigure(int x, int y, Surface& image, SDL_Surface* screen,
       double speed, double gravity, double jumpStrength, int numClips,
       int levelWidth, int levelHeight, Surface* p1, Surface* p2, Surface* p3,
       Surface* p4) {
-   Figure::setFigure(x, y, image, screen, Figure::GRAVITY_ENABLED, levelWidth,
+   Figure::setFigure(x, y, image, screen, GRAVITY_ENABLED, levelWidth,
          levelHeight, true, speed, gravity, jumpStrength, numClips, p1, p2, p3,
          p4);
 
