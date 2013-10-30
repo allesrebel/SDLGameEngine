@@ -15,12 +15,12 @@
 
 #include <string>
 #include <vector>
-#include "../Figure.h"
-#include "../CircBoundaryFigure.h"
-#include "../RectBoundaryFigure.h"
-#include "../GrabbableFigure.h"
-#include "../TempFigure.h"
-#include "../CursorFigure.h"
+#include "../Figures/Figure.h"
+#include "../Figures/CircBoundaryFigure.h"
+#include "../Figures/RectBoundaryFigure.h"
+#include "../Figures/GrabbableFigure.h"
+#include "../Figures/TempFigure.h"
+#include "../Figures/CursorFigure.h"
 #include <cstdio>
 #include <fstream>
 #include <iostream>
