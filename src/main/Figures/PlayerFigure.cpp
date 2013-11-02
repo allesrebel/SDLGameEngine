@@ -14,12 +14,17 @@ const double MIN = 0.2;
 SDL_mutex* lock;
 SDL_cond* canTest;
 
+inline bool my_isnan(double x)
+{
+  return x != x;
+}
+
 void PlayerFigure::determineGrabX(int deltaTicks) {
    if (grabstate) {
       double unitDir = (B.x - A.x) / abs(B.x - A.x);
       double dir = unitDir * deltaTicks / 1000.0;
 
-      if (isnan(dir))
+      if (my_isnan(dir))
          dir = 0;
 
       if (abs(slope(A, B)) <= MIN)
@@ -39,7 +44,7 @@ void PlayerFigure::determineGrabY(int deltaTicks) {
       double unitDir = (B.y - A.y) / abs(B.y - A.y);
       double dir = unitDir * deltaTicks / 1000.0;
 
-      if (isnan(dir))
+      if (my_isnan(dir))
          dir = 0;
 
       if (abs(slope(A, B)) >= MAX)

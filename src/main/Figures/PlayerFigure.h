@@ -14,6 +14,8 @@
 #include "CursorFigure.h"
 #include "TempFigure.h"
 #include "SDL/SDL_thread.h"
+#include <cmath>
+#include <ctgmath>
 
 //TODO arm animation is needed between the PlayerFigure sprite and the GrabbableFigure sprite
 //when grabstate is active
