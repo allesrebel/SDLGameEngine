@@ -7,9 +7,6 @@
 
 #include "MouseFigure.h"
 
-//TODO commented out for now because dependent on Editor
-
-/*
 MouseFigure::MouseFigure(int x, int y, Surface* image, SDL_Surface* screen,
       int levelWidth, int levelHeight, int numClips) :
       Figure(x, y, *image, screen, Figure::GRAVITY_DISABLED, true, 0, 0, 0, 1,
@@ -314,4 +311,3 @@ void MouseFigure::clearContainer() {
    }
    container->clear();
 }
-*/

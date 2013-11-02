@@ -8,9 +8,6 @@
 #ifndef MOUSEFIGURE_H_
 #define MOUSEFIGURE_H_
 
-//TODO commented out for now since dependent on Editor
-
-/*
 #include <SDL/SDL_events.h>
 #include <vector>
 #include "Figure.h"
@@ -68,6 +65,5 @@ class MouseFigure: public Figure {
 	int lvlWidth;
 
 };
-*/
 
 #endif /* MOUSEFIGURE_H_ */
